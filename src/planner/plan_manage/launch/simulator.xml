@@ -1,0 +1,241 @@
+<launch>
+  <arg name="init_x_"/>
+  <arg name="init_y_"/>
+  <arg name="init_z_"/> 
+  <arg name="init_x_1"/>
+  <arg name="init_y_1"/>
+  <arg name="init_z_1"/>
+  <arg name="init_x_2"/>
+  <arg name="init_y_2"/>
+  <arg name="init_z_2"/>
+  <arg name="init_x_3"/>
+  <arg name="init_y_3"/>
+  <arg name="init_z_3"/>
+  <arg name="init_x_4"/>
+  <arg name="init_y_4"/>
+  <arg name="init_z_4"/>    
+  <arg name="obj_num" value="1" />
+  <arg name="map_size_x_"/>
+  <arg name="map_size_y_"/>
+  <arg name="map_size_z_"/>
+  <arg name="c_num"/>
+  <arg name="p_num"/>
+  <arg name="min_dist"/>
+  <arg name="odometry_topic"/>
+  <arg name="drone_id"/>
+
+  <!-- There are two kinds of maps you can choose, just comment out the one you don’t need like the follow. Have a try. /-->
+
+  <![CDATA[node pkg ="map_generator" name ="random_forest" type ="random_forest" output = "screen">    
+    <remap from="~odometry"   to="$(arg odometry_topic)"/>    
+    <param name="map/x_size"     value="$(arg map_size_x_)" />
+    <param name="map/y_size"     value="$(arg map_size_y_)" />
+    <param name="map/z_size"     value="$(arg map_size_z_)" />
+    <param name="map/resolution" value="0.1"/>        
+
+    <param name="ObstacleShape/seed" value="1"/>
+    <param name="map/obs_num"    value="$(arg p_num)"/>
+    <param name="ObstacleShape/lower_rad" value="0.5"/>
+    <param name="ObstacleShape/upper_rad" value="0.7"/>
+    <param name="ObstacleShape/lower_hei" value="0.0"/>
+    <param name="ObstacleShape/upper_hei" value="3.0"/>        
+
+    <param name="map/circle_num" value="$(arg c_num)"/>        
+    <param name="ObstacleShape/radius_l" value="0.7"/>        
+    <param name="ObstacleShape/radius_h" value="0.5"/>        
+    <param name="ObstacleShape/z_l" value="0.7"/>        
+    <param name="ObstacleShape/z_h" value="0.8"/>        
+    <param name="ObstacleShape/theta" value="0.5"/>        
+
+    <param name="sensing/radius" value="5.0"/>        
+    <param name="sensing/rate"   value="10.0"/>  
+    
+    <param name="min_distance" value="$(arg min_dist)"/>         
+  </node]]>
+
+  <![CDATA[node pkg="mockamap" type="mockamap_node" name="mockamap_node" output="screen">  
+      <remap from="/mock_map" to="/map_generator/global_cloud"/>
+
+      <param name="seed" type="int" value="127"/>
+      <param name="update_freq" type="double" value="0.5"/>
+
+      <!--  box edge length, unit meter-->
+      <param name="resolution" type="double" value="0.1"/>
+
+      <!-- map size unit meter-->
+      <param name="x_length" value="$(arg map_size_x_)"/>
+      <param name="y_length" value="$(arg map_size_y_)"/>
+      <param name="z_length" value="$(arg map_size_z_)"/>
+
+      <param name="type" type="int" value="1"/>
+      <!-- 1 perlin noise parameters -->
+      <!-- complexity:    base noise frequency,
+                              large value will be complex
+                              typical 0.0 ~ 0.5 -->
+      <!-- fill:          infill persentage
+                              typical: 0.4 ~ 0.0 -->
+      <!-- fractal:       large value will have more detail-->
+      <!-- attenuation:   for fractal attenuation
+                              typical: 0.0 ~ 0.5 -->
+
+      <param name="complexity"    type="double" value="0.05"/>
+      <param name="fill"          type="double" value="0.12"/>
+      <param name="fractal"       type="int"    value="1"/>
+      <param name="attenuation"   type="double" value="0.1"/>
+  </node]]>
+
+  
+  <!-- <node pkg="so3_quadrotor_simulator" type="quadrotor_simulator_so3" name="drone_$(arg drone_id)_quadrotor_simulator_so3" output="screen">
+        <param name="rate/odom" value="200.0"/>
+        <param name="simulator/init_state_x" value="$(arg init_x_)"/>
+        <param name="simulator/init_state_y" value="$(arg init_y_)"/>
+        <param name="simulator/init_state_z" value="$(arg init_z_)"/>
+
+        <remap from="~odom" to="drone_$(arg drone_id)_visual_slam/odom"/>
+        <remap from="~cmd" to="drone_$(arg drone_id)_so3_cmd"/>
+        <remap from="~force_disturbance" to="drone_$(arg drone_id)_force_disturbance"/>    
+        <remap from="~moment_disturbance" to="drone_$(arg drone_id)_moment_disturbance"/>        
+  </node>
+ 
+  <node pkg="nodelet" type="nodelet" args="standalone so3_control/SO3ControlNodelet" name="drone_$(arg drone_id)_so3_control" required="true" output="screen">
+        <param name="so3_control/init_state_x" value="$(arg init_x_)"/>
+        <param name="so3_control/init_state_y" value="$(arg init_y_)"/>
+        <param name="so3_control/init_state_z" value="$(arg init_z_)"/>
+        <remap from="~odom" to="drone_$(arg drone_id)_visual_slam/odom"/>
+        <remap from="~position_cmd" to="drone_$(arg drone_id)_planning/pos_cmd"/>
+        <remap from="~motors" to="drone_$(arg drone_id)_motors"/>
+        <remap from="~corrections" to="drone_$(arg drone_id)_corrections"/>
+        <remap from="~so3_cmd" to="drone_$(arg drone_id)_so3_cmd"/>
+        <rosparam file="$(find so3_control)/config/gains_hummingbird.yaml"/>
+        <rosparam file="$(find so3_control)/config/corrections_hummingbird.yaml"/>
+        <param name="mass" value="0.98"/>
+        <param name="use_angle_corrections " value="false"/>
+        <param name="use_external_yaw "      value="false"/>
+        <param name="gains/rot/z" value="1.0"/>    
+        <param name="gains/ang/z" value="0.1"/>        
+  </node> -->
+  
+  <node pkg="poscmd_2_odom" name="drone_$(arg drone_id)_poscmd_2_odom" type="poscmd_2_odom" output="screen">
+        <!-- load  -->
+        <param name="init_x" value="$(arg init_x_)"/>
+        <param name="init_y" value="$(arg init_y_)"/>
+        <param name="init_z" value="$(arg init_z_)"/>
+        
+        <!-- heli1 -->
+        <param name="init_x1" value="$(arg init_x_1)"/>
+        <param name="init_y1" value="$(arg init_y_1)"/>
+        <param name="init_z1" value="$(arg init_z_1)"/>
+        <!-- heli2 -->
+        <param name="init_x2" value="$(arg init_x_2)"/>
+        <param name="init_y2" value="$(arg init_y_2)"/>
+        <param name="init_z2" value="$(arg init_z_2)"/>        
+        <!-- heli3 -->
+        <param name="init_x3" value="$(arg init_x_3)"/>
+        <param name="init_y3" value="$(arg init_y_3)"/>
+        <param name="init_z3" value="$(arg init_z_3)"/>        
+        <!-- heli4 -->
+        <param name="init_x4" value="$(arg init_x_4)"/>
+        <param name="init_y4" value="$(arg init_y_4)"/>
+        <param name="init_z4" value="$(arg init_z_4)"/>
+
+        <remap from="~command" to="drone_0_planning/pos_cmd"/>
+        <remap from="~command1" to="drone_1_planning/pos_cmd"/>
+        <remap from="~command2" to="drone_2_planning/pos_cmd"/>
+        <remap from="~command3" to="drone_3_planning/pos_cmd"/>
+        <remap from="~command4" to="drone_4_planning/pos_cmd"/>
+
+        <remap from="~odometry" to="drone_0_visual_slam/odom"/>
+        <remap from="~odometry1" to="drone_1_visual_slam/odom"/>
+        <remap from="~odometry2" to="drone_2_visual_slam/odom"/>
+        <remap from="~odometry3" to="drone_3_visual_slam/odom"/>
+        <remap from="~odometry4" to="drone_4_visual_slam/odom"/>
+        
+        <rosparam file="$(find ego_planner)/config/our_lift.yaml"/>
+
+        <remap from="~swarm_graph_visual" to="/drone_0_ego_planner_node/swarm_graph_visual"/>
+
+  </node>
+  
+  <node pkg="odom_visualization" name="drone_$(arg drone_id)_odom_visualization" type="odom_visualization" output="screen">
+        <remap from="~path" to="drone_0_odom_visualization/path"/>
+        <remap from="~path1" to="drone_1_odom_visualization/path"/>
+        <remap from="~path2" to="drone_2_odom_visualization/path"/>
+        <remap from="~path3" to="drone_3_odom_visualization/path"/>
+        <remap from="~path4" to="drone_4_odom_visualization/path"/>
+        
+        <remap from="~robot" to="drone_0_odom_visualization/robot"/>
+        <remap from="~robot1" to="drone_1_odom_visualization/robot"/>
+        <remap from="~robot2" to="drone_2_odom_visualization/robot"/>
+        <remap from="~robot3" to="drone_3_odom_visualization/robot"/>
+        <remap from="~robot4" to="drone_4_odom_visualization/robot"/>
+
+        <remap from="~odom" to="drone_0_visual_slam/odom"/>
+        <remap from="~odom1" to="drone_1_visual_slam/odom"/>
+        <remap from="~odom2" to="drone_2_visual_slam/odom"/>
+        <remap from="~odom3" to="drone_3_visual_slam/odom"/>
+        <remap from="~odom4" to="drone_4_visual_slam/odom"/>
+
+        <param name="color/a" value="1.0"/>    
+        <param name="color/r" value="0.0"/>        
+        <param name="color/g" value="0.0"/>        
+        <param name="color/b" value="0.0"/>       
+        <param name="cross_config" value="true"/>
+        <param name="robot_scale" value="0.001"/>
+        <param name="cross_yaw" value="0.0"/>
+        <param name="cross_pitch" value="0.0"/>
+        <param name="cross_roll" value="0.0"/>
+        <param name="cross_x" value="0.0"/>
+        <param name="cross_y" value="0.0"/>
+        <param name="cross_z" value="0.0"/>
+                <param name="robot_scale1" value="0.05"/>
+        <param name="cross_yaw1" value="180.0"/>
+        <param name="cross_pitch1" value="0.0"/>
+        <param name="cross_roll1" value="0.0"/>
+        <param name="cross_x1" value="0.0"/>
+        <param name="cross_y1" value="0.0"/>
+        <param name="cross_z1" value="0.0"/>
+                <param name="robot_scale2" value="0.05"/>
+        <param name="cross_yaw2" value="180.0"/>
+        <param name="cross_pitch2" value="0.0"/>
+        <param name="cross_roll2" value="0.0"/>
+        <param name="cross_x2" value="0.0"/>
+        <param name="cross_y2" value="0.0"/>
+        <param name="cross_z2" value="0.0"/>
+                <param name="robot_scale3" value="0.05"/>
+        <param name="cross_yaw3" value="180.0"/>
+        <param name="cross_pitch3" value="0.0"/>
+        <param name="cross_roll3" value="0.0"/>
+        <param name="cross_x3" value="0.0"/>
+        <param name="cross_y3" value="0.0"/>
+        <param name="cross_z3" value="0.0"/>
+                <param name="robot_scale4" value="0.05"/>
+        <param name="cross_yaw4" value="180.0"/>
+        <param name="cross_pitch4" value="0.0"/>
+        <param name="cross_roll4" value="0.0"/>
+        <param name="cross_x4" value="0.0"/>
+        <param name="cross_y4" value="0.0"/>
+        <param name="cross_z4" value="0.0"/>
+        <param name="mesh_resource_load" value="package://odom_visualization/meshes/rec.stl"/>
+        <param name="mesh_resource_heli1" value="package://odom_visualization/meshes/heli.obj"/>
+        <param name="mesh_resource_heli2" value="package://odom_visualization/meshes/heli.obj"/>
+        <param name="mesh_resource_heli3" value="package://odom_visualization/meshes/heli.obj"/>
+        <param name="mesh_resource_heli4" value="package://odom_visualization/meshes/heli.obj"/>
+
+  </node>
+
+  <node pkg="local_sensing_node" type="pcl_render_node" name="drone_$(arg drone_id)_pcl_render_node" output="screen">
+        <rosparam command="load" file="$(find local_sensing_node)/params/camera.yaml" />
+        <param name="sensing_horizon"  value="10.0" />
+        <param name="sensing_rate"     value="30.0"/>
+        <param name="estimation_rate"  value="30.0"/>
+
+        <param name="map/x_size"     value="$(arg map_size_x_)"/>
+        <param name="map/y_size"     value="$(arg map_size_y_)"/>
+        <param name="map/z_size"     value="$(arg map_size_z_)"/>
+
+        <remap from="~global_map" to="/map_generator/global_cloud"/>
+        <remap from="~odometry"   to="/drone_$(arg drone_id)_$(arg odometry_topic)"/>
+        <remap from="~pcl_render_node/cloud"   to="/drone_$(arg drone_id)_pcl_render_node/cloud"/>
+  </node>
+
+</launch>

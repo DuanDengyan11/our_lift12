@@ -1,0 +1,4 @@
+<launch>
+<node pkg="traj_opt" name="traj_opt_node" type="traj_opt" output="screen">
+</node>
+</launch>

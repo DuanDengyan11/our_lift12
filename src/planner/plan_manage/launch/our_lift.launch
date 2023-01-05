@@ -1,0 +1,70 @@
+  <launch>
+    <arg name="map_size_x" value="70.0"/>
+    <arg name="map_size_y" value="30.0"/>
+    <arg name="map_size_z" value=" 8.0"/>
+
+    <arg name="odom_topic" value="visual_slam/odom" />
+        
+    <!-- map -->
+    <node pkg ="map_generator" name ="random_forest" type ="random_forest" output = "screen">    
+        <param name="map/x_size"     value="40" />
+        <param name="map/y_size"     value="20" />
+        <param name="map/z_size"     value="8.0" />
+        <param name="map/resolution" value="0.1"/>        
+        <param name="ObstacleShape/seed" value="1"/>
+        
+        <param name="map/obs_num"    value="10"/>
+        <param name="ObstacleShape/lower_rad" value="1.0"/>
+        <param name="ObstacleShape/upper_rad" value="2.0"/>
+        <param name="ObstacleShape/lower_hei" value="7.0"/>
+        <param name="ObstacleShape/upper_hei" value="8.0"/>        
+
+        <param name="map/circle_num" value="0"/>        
+        <param name="ObstacleShape/radius_l" value="2.0"/>        
+        <param name="ObstacleShape/radius_h" value="5.2"/>        
+        <param name="ObstacleShape/z_l" value="3.5"/>        
+        <param name="ObstacleShape/z_h" value="7.0"/>        
+        <param name="ObstacleShape/theta" value="0.5"/>        
+    
+        <param name="pub_rate"   value="1.0"/>  
+        <param name="min_distance" value="5.0"/>         
+    </node>
+
+    <!-- swarm robots -->
+    <include file="$(find ego_planner)/launch/run_in_sim.launch">
+    
+        <arg name="drone_id" value="0"/>
+
+        <arg name="init_x" value="-33.0"/>
+        <arg name="init_y" value="0.0"/>
+        <arg name="init_z" value="1.5"/>
+
+        <!-- heli1 -->
+        <arg name="init_x1" value="-34.9"/>
+        <arg name="init_y1" value="1.66"/>
+        <arg name="init_z1" value="5.7"/>
+        <!-- heli2 -->
+        <arg name="init_x2" value="-34.9"/>
+        <arg name="init_y2" value="-1.66"/>
+        <arg name="init_z2" value="5.7"/>
+        <!-- heli3 -->
+        <arg name="init_x3" value="-31.1"/>
+        <arg name="init_y3" value="-1.66"/>
+        <arg name="init_z3" value="5.7"/>
+        <!-- heli4 -->
+        <arg name="init_x4" value="-31.1"/>
+        <arg name="init_y4" value="1.66"/>
+        <arg name="init_z4" value="5.7"/>
+
+        <arg name="target_x" value="-25.0"/>
+        <arg name="target_y" value="0.0"/>
+        <arg name="target_z" value="1.5"/>
+
+        <arg name="map_size_x"              value="$(arg map_size_x)"/>
+        <arg name="map_size_y"              value="$(arg map_size_y)"/>
+        <arg name="map_size_z"              value="$(arg map_size_z)"/>
+        <arg name="odom_topic"              value="$(arg odom_topic)"/>
+        
+    </include>
+
+  </launch>

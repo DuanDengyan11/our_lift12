@@ -15,7 +15,7 @@ using namespace std;
 #include <iostream>
 #include <cable_load/cable_load.h>
 
-
+fstream result_file_;
 ros::Publisher pos_cmd_pub, pos_cmd_pub1, pos_cmd_pub2, pos_cmd_pub3, pos_cmd_pub4;
 
 quadrotor_msgs::PositionCommand cmd, cmd1, cmd2, cmd3, cmd4;
@@ -134,6 +134,39 @@ void pubCmd(cable_load cable_load_)
 
   // cout << "t_cur" << t_cur << "duration" << traj_duration_ << "pos_load" << pos_load(0) << pos_load(1) << pos_load(2) << endl;
 
+    for(int i=0; i < 3; i++)
+  {
+    result_file_ << pos_load(i) << '\t';
+  }
+
+  for(int i=0; i<9; i++)
+  {
+    result_file_ << pos_tq22n(i) << '\t';
+  }
+
+  for(int i=0; i < 3; i++)
+  {
+    result_file_ << vel_load(i) << '\t';
+  }
+
+  for(int i=0; i<9; i++)
+  {
+    result_file_ << vel_tq22n(i) << '\t';
+  }
+
+
+  for(int i=0; i < 3; i++)
+  {
+    result_file_ << acc_load(i) << '\t';
+  }
+
+  for(int i=0; i<9; i++)
+  {
+    result_file_ << acc_tq22n(i) << '\t';
+  }
+
+  result_file_ << '\n';
+
   // load 
   yaw_yawdot.first = 0;
   yaw_yawdot.second = 0;
@@ -225,6 +258,14 @@ int main(int argc, char **argv)
 
   nh.param("traj_server/time_forward", time_forward_, -1.0);
   ROS_WARN("[Traj server]: ready.");
+
+  time_t t;
+  struct tm *tmp;
+  time(&t);
+  tmp = localtime(&t);
+  char buf2[128];
+  strftime(buf2, 64, "/home/tutu/our_lift12/traj_%Y-%m-%d %H:%M:%S.txt", tmp);
+  result_file_.open(buf2, ios::app);
   
   ros::Rate rate(100);
   bool status = ros::ok();
